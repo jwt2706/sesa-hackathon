@@ -9,12 +9,13 @@ import { ListingCard } from '../components/ListingCard';
 import { ListingDetailModal } from '../components/ListingDetailModal';
 import { UploadListingModal } from '../components/UploadListingModal';
 
-type TabType = 'applications' | 'compare';
+type TabType = 'applications' | 'compare' | 'my-listings';
 
 export function LandlordDashboard() {
   const { profile, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('applications');
   const [listings, setListings] = useState<Listing[]>([]);
+  const [myListings, setMyListings] = useState<Listing[]>([]);
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
@@ -24,8 +25,10 @@ export function LandlordDashboard() {
   useEffect(() => {
     if (activeTab === 'applications') {
       loadApplications();
-    } else {
+    } else if (activeTab === 'compare') {
       loadListings();
+    } else {
+      loadMyListings();
     }
   }, [activeTab, filters]);
 
@@ -48,6 +51,18 @@ export function LandlordDashboard() {
       setListings(data);
     } catch (error) {
       console.error('Error loading listings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMyListings = async () => {
+    setLoading(true);
+    try {
+      const data = await listingService.getLandlordListings();
+      setMyListings(data);
+    } catch (error) {
+      console.error('Error loading my listings:', error);
     } finally {
       setLoading(false);
     }
@@ -113,6 +128,16 @@ export function LandlordDashboard() {
                 }`}
               >
                 Compare Listings
+              </button>
+              <button
+                onClick={() => setActiveTab('my-listings')}
+                className={`flex-1 py-3 px-4 font-semibold transition-colors ${
+                  activeTab === 'my-listings'
+                    ? 'glass-button'
+                    : 'glass-button-secondary'
+                }`}
+              >
+                My Listings
               </button>
             </div>
 
@@ -206,7 +231,7 @@ export function LandlordDashboard() {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : activeTab === 'compare' ? (
               <div>
                 <h2 className="text-xl font-semibold text-gray-100 mb-4">
                   All Listings
@@ -221,6 +246,30 @@ export function LandlordDashboard() {
                 ) : (
                   <div className="space-y-4">
                     {listings.map((listing) => (
+                      <ListingCard
+                        key={listing.id}
+                        listing={listing}
+                        onViewClick={setSelectedListing}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-xl font-semibold text-gray-100 mb-4">
+                  My Listings
+                </h2>
+
+                {loading ? (
+                  <div className="text-center py-12 text-gray-400">Loading listings...</div>
+                ) : myListings.length === 0 ? (
+                  <div className="text-center py-12 text-gray-400">
+                    You have not uploaded any listings yet.
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {myListings.map((listing) => (
                       <ListingCard
                         key={listing.id}
                         listing={listing}
@@ -253,6 +302,9 @@ export function LandlordDashboard() {
             setShowUploadModal(false);
             if (activeTab === 'compare') {
               loadListings();
+            }
+            if (activeTab === 'my-listings') {
+              loadMyListings();
             }
           }}
         />

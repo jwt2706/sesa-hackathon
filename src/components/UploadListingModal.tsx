@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { listingService } from '../services/api';
+import { supabase } from '../lib/supabase';
 import { Listing } from '../types/database';
 
 interface UploadListingModalProps {
@@ -10,6 +11,16 @@ interface UploadListingModalProps {
 }
 
 export function UploadListingModal({ onClose, onSuccess, existingListing }: UploadListingModalProps) {
+  const leaseOptions = ['4 months', '8 months', '12 months', '16 months'];
+  const initialLeaseDuration = leaseOptions.includes(existingListing?.lease_duration ?? '')
+    ? existingListing?.lease_duration ?? '12 months'
+    : '12 months';
+  const createUploadId = () => {
+    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+      return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  };
   const [formData, setFormData] = useState({
     title: existingListing?.title || '',
     description: existingListing?.description || '',
@@ -20,13 +31,13 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
     is_on_campus: existingListing?.is_on_campus || false,
     gender_preference: existingListing?.gender_preference || 'any',
     rental_type: existingListing?.rental_type || 'apartment',
-    image_urls: existingListing?.image_urls.join('\n') || '',
     amenities: existingListing?.amenities || [] as string[],
     available_from: existingListing?.available_from || new Date().toISOString().split('T')[0],
-    lease_duration: existingListing?.lease_duration || '12 months',
+    lease_duration: initialLeaseDuration,
   });
 
   const [loading, setLoading] = useState(false);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const handleAmenityToggle = (amenity: string) => {
     setFormData((prev) => ({
@@ -37,15 +48,38 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
     }));
   };
 
+  const uploadListingImages = async () => {
+    if (imageFiles.length === 0) return [] as string[];
+
+    const uploadedUrls: string[] = [];
+
+    for (const file of imageFiles) {
+      const fileExt = file.name.split('.').pop() || 'jpg';
+      const fileName = `${createUploadId()}-${Date.now()}.${fileExt}`;
+      const filePath = `listing-images/${fileName}`;
+
+      const { error: uploadError } = await supabase
+        .storage
+        .from('listings')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('listings').getPublicUrl(filePath);
+      uploadedUrls.push(data.publicUrl);
+    }
+
+    return uploadedUrls;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const imageUrlsArray = formData.image_urls
-        .split('\n')
-        .map((url) => url.trim())
-        .filter((url) => url.length > 0);
+      const uploadedImageUrls = await uploadListingImages();
+      const existingImageUrls = existingListing?.image_urls ?? [];
+      const imageUrlsArray = [...existingImageUrls, ...uploadedImageUrls];
 
       const listingData = {
         ...formData,
@@ -207,13 +241,17 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
               <label className="block text-sm font-medium text-gray-300 mb-1">
                 Lease Duration
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.lease_duration}
                 onChange={(e) => setFormData({ ...formData, lease_duration: e.target.value })}
                 className="glass-input"
-                placeholder="e.g., 12 months"
-              />
+              >
+                {leaseOptions.map((duration) => (
+                  <option key={duration} value={duration}>
+                    {duration}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -281,18 +319,24 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
 
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              Image URLs (one per line)
+              Listing Images
             </label>
-            <textarea
-              value={formData.image_urls}
-              onChange={(e) => setFormData({ ...formData, image_urls: e.target.value })}
-              className="glass-input font-mono text-sm"
-              rows={4}
-              placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="glass-input"
+              onChange={(e) => setImageFiles(Array.from(e.target.files ?? []))}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Enter one image URL per line. Images should be publicly accessible.
-            </p>
+            {existingListing?.image_urls?.length ? (
+              <p className="text-xs text-gray-500 mt-2">
+                Existing images: {existingListing.image_urls.length}. New uploads will be added.
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 mt-2">
+                Upload one or more images. PNG or JPG recommended.
+              </p>
+            )}
           </div>
 
           <div className="flex gap-4 pt-4">

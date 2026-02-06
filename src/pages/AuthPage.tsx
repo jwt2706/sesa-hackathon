@@ -12,6 +12,7 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [isLandlord, setIsLandlord] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +24,7 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
 
     try {
       if (mode === 'signup') {
-        await signUp(email, password, name, isLandlord);
+        await signUp(email, password, name, phone, isLandlord);
       } else {
         await signIn(email, password);
       }
@@ -55,19 +56,34 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="glass-input"
-                  placeholder="Your name"
-                />
-              </div>
+              <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="glass-input"
+                    placeholder="Your name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="glass-input"
+                    placeholder="(555) 123-4567"
+                  />
+                </div>
+              </>
             )}
 
             <div>
@@ -98,18 +114,20 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
               />
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isLandlord"
-                checked={isLandlord}
-                onChange={(e) => setIsLandlord(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-white/20 rounded focus:ring-blue-600"
-              />
-              <label htmlFor="isLandlord" className="ml-2 text-sm text-gray-300">
-                I am a landlord
-              </label>
-            </div>
+            {mode === 'signup' && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isLandlord"
+                  checked={isLandlord}
+                  onChange={(e) => setIsLandlord(e.target.checked)}
+                  className="w-4 h-4 text-blue-600 border-white/20 rounded focus:ring-blue-600"
+                />
+                <label htmlFor="isLandlord" className="ml-2 text-sm text-gray-300">
+                  I am a landlord
+                </label>
+              </div>
+            )}
 
             {error && (
               <div className="text-red-200 text-sm bg-red-900/40 p-3 rounded-lg border border-red-500/30">

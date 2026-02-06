@@ -7,7 +7,13 @@ interface AuthContextType {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string, isLandlord: boolean) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+    phone: string,
+    isLandlord: boolean
+  ) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -62,7 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, isLandlord: boolean) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string,
+    phone: string,
+    isLandlord: boolean
+  ) => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -75,6 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: data.user.id,
         email,
         name,
+        phone: phone.trim() || null,
         is_landlord: isLandlord,
       });
 
