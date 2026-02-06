@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PeopleList from './components/PeopleList'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 
@@ -80,6 +81,8 @@ function App() {
             </p>
           </div>
         </section>
+
+        <PeopleList />
       </div>
     </main>
   )

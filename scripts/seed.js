@@ -2,6 +2,8 @@ import { MongoClient } from "mongodb";
 import { randomUUID } from "crypto";
 import { faker } from "@faker-js/faker";
 
+import "dotenv/config";
+
 const uri = process.env.MONGODB_URI;
 if (!uri) {
   throw new Error("Missing MONGODB_URI in environment.");
