@@ -36,8 +36,8 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen auth-background flex items-center justify-center p-4">
+      <div className="max-w-md w-full auth-content">
         <button
           onClick={onBack}
           className="mb-6 flex items-center gap-2 text-gray-300 hover:text-gray-100 transition-colors"

@@ -4,8 +4,8 @@ interface LandingPageProps {
 
 export function LandingPage({ onNavigate }: LandingPageProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-6">
-      <div className="max-w-md w-full glass-panel rounded-2xl p-10">
+    <div className="min-h-screen landing-background flex items-center justify-center p-6">
+      <div className="max-w-md w-full glass-panel rounded-2xl p-10 auth-content">
         <div className="text-center mb-10">
           <h1 className="text-6xl font-bold text-gray-100 mb-2">UOttaLive</h1>
           <p className="text-2xl text-gray-400 italic">U-oughta-live here!</p>
