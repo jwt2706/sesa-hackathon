@@ -1,4 +1,4 @@
-import { MapPin, Bed, Bath, DollarSign } from 'lucide-react';
+import { FaMapPin, FaBed, FaBath, FaDollarSign } from 'react-icons/fa6';
 import { Listing } from '../types/database';
 
 interface ListingCardProps {
@@ -10,7 +10,7 @@ export function ListingCard({ listing, onViewClick }: ListingCardProps) {
   const mainImage = listing.image_urls[0] || 'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg';
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="glass-card rounded-lg overflow-hidden transition-transform hover:-translate-y-0.5">
       <div className="h-48 overflow-hidden">
         <img
           src={mainImage}
@@ -20,40 +20,40 @@ export function ListingCard({ listing, onViewClick }: ListingCardProps) {
       </div>
 
       <div className="p-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">{listing.title}</h3>
+        <h3 className="text-lg font-semibold text-gray-100 mb-2">{listing.title}</h3>
 
-        <div className="flex items-center gap-1 text-gray-600 mb-3">
-          <MapPin size={16} />
+        <div className="flex items-center gap-1 text-gray-400 mb-3">
+          <FaMapPin size={16} />
           <span className="text-sm">{listing.address}</span>
         </div>
 
-        <div className="flex items-center gap-4 mb-4 text-sm text-gray-600">
+        <div className="flex items-center gap-4 mb-4 text-sm text-gray-400">
           <div className="flex items-center gap-1">
-            <DollarSign size={16} />
+            <FaDollarSign size={16} />
             <span className="font-semibold">${listing.price}/mo</span>
           </div>
           <div className="flex items-center gap-1">
-            <Bed size={16} />
+            <FaBed size={16} />
             <span>{listing.bedrooms} bed</span>
           </div>
           <div className="flex items-center gap-1">
-            <Bath size={16} />
+            <FaBath size={16} />
             <span>{listing.bathrooms} bath</span>
           </div>
         </div>
 
         <div className="flex gap-2 mb-4">
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+          <span className="px-2 py-1 text-xs rounded-full glass-pill">
             {listing.is_on_campus ? 'On Campus' : 'Off Campus'}
           </span>
-          <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full capitalize">
+          <span className="px-2 py-1 bg-white/5 text-gray-300 text-xs rounded-full border border-white/10 capitalize">
             {listing.rental_type}
           </span>
         </div>
 
         <button
           onClick={() => onViewClick(listing)}
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full py-2 glass-button"
         >
           View Details
         </button>

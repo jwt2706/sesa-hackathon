@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut } from 'lucide-react';
+import { FaRightFromBracket } from 'react-icons/fa6';
 import { useAuth } from '../contexts/AuthContext';
 import { listingService } from '../services/api';
 import { Listing, ListingFilters } from '../types/database';
@@ -38,15 +38,15 @@ export function StudentDashboard() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen">
+      <header className="glass-header">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-900">UOttaLive</h1>
+          <h1 className="text-2xl font-bold text-gray-100">UOttaLive</h1>
           <button
             onClick={signOut}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 glass-button-secondary"
           >
-            <LogOut size={18} />
+            <FaRightFromBracket size={18} />
             Logout
           </button>
         </div>
@@ -63,14 +63,14 @@ export function StudentDashboard() {
           </div>
 
           <div className="col-span-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4">
               Available Listings
             </h2>
 
             {loading ? (
-              <div className="text-center py-12 text-gray-600">Loading listings...</div>
+              <div className="text-center py-12 text-gray-400">Loading listings...</div>
             ) : listings.length === 0 ? (
-              <div className="text-center py-12 text-gray-600">
+              <div className="text-center py-12 text-gray-400">
                 No listings found matching your filters.
               </div>
             ) : (

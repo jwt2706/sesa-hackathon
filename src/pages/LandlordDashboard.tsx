@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, CheckCircle, XCircle } from 'lucide-react';
+import { FaRightFromBracket, FaCircleCheck, FaCircleXmark } from 'react-icons/fa6';
 import { useAuth } from '../contexts/AuthContext';
 import { listingService, applicationService } from '../services/api';
 import { Listing, ListingFilters } from '../types/database';
@@ -69,15 +69,15 @@ export function LandlordDashboard() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200">
+    <div className="min-h-screen">
+      <header className="glass-header">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-900">UOttaLive</h1>
+          <h1 className="text-2xl font-bold text-gray-100">UOttaLive</h1>
           <button
             onClick={signOut}
-            className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 glass-button-secondary"
           >
-            <LogOut size={18} />
+            <FaRightFromBracket size={18} />
             Logout
           </button>
         </div>
@@ -96,20 +96,20 @@ export function LandlordDashboard() {
             <div className="flex gap-2 mb-6">
               <button
                 onClick={() => setActiveTab('applications')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
+                className={`flex-1 py-3 px-4 font-semibold transition-colors ${
                   activeTab === 'applications'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'glass-button'
+                    : 'glass-button-secondary'
                 }`}
               >
                 Applications
               </button>
               <button
                 onClick={() => setActiveTab('compare')}
-                className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors ${
+                className={`flex-1 py-3 px-4 font-semibold transition-colors ${
                   activeTab === 'compare'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
+                    ? 'glass-button'
+                    : 'glass-button-secondary'
                 }`}
               >
                 Compare Listings
@@ -118,14 +118,14 @@ export function LandlordDashboard() {
 
             {activeTab === 'applications' ? (
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-gray-100 mb-4">
                   Applications to Your Listings
                 </h2>
 
                 {loading ? (
-                  <div className="text-center py-12 text-gray-600">Loading applications...</div>
+                  <div className="text-center py-12 text-gray-400">Loading applications...</div>
                 ) : applications.length === 0 ? (
-                  <div className="text-center py-12 text-gray-600">
+                  <div className="text-center py-12 text-gray-400">
                     No applications yet.
                   </div>
                 ) : (
@@ -133,36 +133,36 @@ export function LandlordDashboard() {
                     {applications.map((app) => (
                       <div
                         key={app.id}
-                        className="bg-white rounded-lg shadow-md p-4"
+                        className="glass-card rounded-lg p-4"
                       >
                         <div className="mb-3">
-                          <h3 className="text-lg font-semibold text-gray-900">
+                          <h3 className="text-lg font-semibold text-gray-100">
                             {app.listings.title}
                           </h3>
-                          <p className="text-sm text-gray-600">{app.listings.address}</p>
+                          <p className="text-sm text-gray-400">{app.listings.address}</p>
                         </div>
 
-                        <div className="border-t border-gray-200 pt-3 mb-3">
+                        <div className="border-t border-white/10 pt-3 mb-3">
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <p className="font-semibold text-gray-900">
+                              <p className="font-semibold text-gray-100">
                                 {app.profiles.name}
                               </p>
-                              <p className="text-sm text-gray-600">{app.profiles.email}</p>
+                              <p className="text-sm text-gray-400">{app.profiles.email}</p>
                               {app.profiles.phone && (
-                                <p className="text-sm text-gray-600">{app.profiles.phone}</p>
+                                <p className="text-sm text-gray-400">{app.profiles.phone}</p>
                               )}
                             </div>
                             {app.group_id && (
-                              <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                              <span className="px-3 py-1 text-xs font-semibold rounded-full glass-pill">
                                 Group Application
                               </span>
                             )}
                           </div>
 
                           {app.message && (
-                            <div className="bg-gray-50 p-3 rounded-lg mb-3">
-                              <p className="text-sm text-gray-700">{app.message}</p>
+                            <div className="bg-white/5 border border-white/10 p-3 rounded-lg mb-3">
+                              <p className="text-sm text-gray-300">{app.message}</p>
                             </div>
                           )}
 
@@ -177,14 +177,14 @@ export function LandlordDashboard() {
                               onClick={() => handleUpdateApplicationStatus(app.id, 'accepted')}
                               className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
                             >
-                              <CheckCircle size={18} />
+                              <FaCircleCheck size={18} />
                               Accept
                             </button>
                             <button
                               onClick={() => handleUpdateApplicationStatus(app.id, 'rejected')}
                               className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
                             >
-                              <XCircle size={18} />
+                              <FaCircleXmark size={18} />
                               Reject
                             </button>
                           </div>
@@ -192,10 +192,10 @@ export function LandlordDashboard() {
 
                         {app.status !== 'pending' && (
                           <div
-                            className={`text-center py-2 rounded-lg font-semibold ${
+                            className={`text-center py-2 rounded-lg font-semibold border ${
                               app.status === 'accepted'
-                                ? 'bg-green-100 text-green-700'
-                                : 'bg-red-100 text-red-700'
+                                ? 'bg-green-900/40 text-green-200 border-green-500/30'
+                                : 'bg-red-900/40 text-red-200 border-red-500/30'
                             }`}
                           >
                             {app.status === 'accepted' ? 'Accepted' : 'Rejected'}
@@ -208,14 +208,14 @@ export function LandlordDashboard() {
               </div>
             ) : (
               <div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                <h2 className="text-xl font-semibold text-gray-100 mb-4">
                   All Listings
                 </h2>
 
                 {loading ? (
-                  <div className="text-center py-12 text-gray-600">Loading listings...</div>
+                  <div className="text-center py-12 text-gray-400">Loading listings...</div>
                 ) : listings.length === 0 ? (
-                  <div className="text-center py-12 text-gray-600">
+                  <div className="text-center py-12 text-gray-400">
                     No listings found matching your filters.
                   </div>
                 ) : (

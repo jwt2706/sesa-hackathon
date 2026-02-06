@@ -1,4 +1,4 @@
-import { User, Users, FileText } from 'lucide-react';
+import { FaUser, FaUsers, FaFileLines } from 'react-icons/fa6';
 import { Profile } from '../types/database';
 
 interface ProfileSidebarProps {
@@ -15,15 +15,15 @@ export function ProfileSidebar({
   onUploadListingClick,
 }: ProfileSidebarProps) {
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 h-fit">
+    <div className="glass-card rounded-lg p-6 h-fit">
       <div className="flex flex-col items-center mb-6">
-        <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-3">
-          <User size={40} className="text-blue-600" />
+        <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-3">
+          <FaUser size={40} className="text-blue-200" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900">{profile.name}</h3>
-        <p className="text-sm text-gray-600">{profile.email}</p>
+        <h3 className="text-lg font-semibold text-gray-100">{profile.name}</h3>
+        <p className="text-sm text-gray-400">{profile.email}</p>
         {profile.is_landlord && (
-          <span className="mt-2 px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+          <span className="mt-2 px-3 py-1 bg-green-900/40 text-green-200 text-xs font-semibold rounded-full border border-green-500/30">
             Landlord
           </span>
         )}
@@ -31,15 +31,15 @@ export function ProfileSidebar({
 
       {profile.description && (
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Bio</h4>
-          <p className="text-sm text-gray-600">{profile.description}</p>
+          <h4 className="text-sm font-semibold text-gray-300 mb-2">Bio</h4>
+          <p className="text-sm text-gray-400">{profile.description}</p>
         </div>
       )}
 
       {profile.phone && (
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-700 mb-2">Phone</h4>
-          <p className="text-sm text-gray-600">{profile.phone}</p>
+          <h4 className="text-sm font-semibold text-gray-300 mb-2">Phone</h4>
+          <p className="text-sm text-gray-400">{profile.phone}</p>
         </div>
       )}
 
@@ -48,25 +48,25 @@ export function ProfileSidebar({
           <>
             <button
               onClick={onGroupClick}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 glass-button"
             >
-              <Users size={18} />
+              <FaUsers size={18} />
               Do you have a group?
             </button>
             <button
               onClick={onApplicationStatusClick}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 glass-button-secondary"
             >
-              <FileText size={18} />
+              <FaFileLines size={18} />
               Application Status
             </button>
           </>
         ) : (
           <button
             onClick={onUploadListingClick}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-3 glass-button"
           >
-            <FileText size={18} />
+            <FaFileLines size={18} />
             Upload Listing
           </button>
         )}

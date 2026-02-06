@@ -1,3 +1,82 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	:root {
+		color-scheme: dark;
+	}
+
+	body {
+		background-color: #2d2d2c;
+		background-image:
+			radial-gradient(900px 500px at 10% -10%, rgba(143, 0, 26, 0.35), transparent 60%),
+			radial-gradient(800px 500px at 90% 0%, rgba(128, 116, 108, 0.25), transparent 60%),
+			linear-gradient(180deg, rgba(45, 45, 44, 0.95), rgba(45, 45, 44, 1));
+		color: #f6f4f3;
+		min-height: 100vh;
+	}
+}
+
+@layer components {
+	.glass-panel {
+		background: rgba(45, 45, 44, 0.78);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+		backdrop-filter: blur(18px) saturate(120%);
+	}
+
+	.glass-card {
+		background: rgba(255, 255, 255, 0.06);
+		border: 1px solid rgba(255, 255, 255, 0.08);
+		box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(14px) saturate(120%);
+	}
+
+	.glass-header {
+		background: rgba(45, 45, 44, 0.88);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(18px) saturate(130%);
+	}
+
+	.glass-input {
+		@apply w-full px-4 py-2 rounded-lg border border-white/10 bg-white/5 text-gray-100 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600/70;
+	}
+
+	.glass-button {
+		@apply text-white font-semibold rounded-lg transition-colors;
+		background: linear-gradient(135deg, rgba(143, 0, 26, 0.95), rgba(143, 0, 26, 0.65));
+		border: 1px solid rgba(143, 0, 26, 0.6);
+		box-shadow: 0 12px 28px rgba(143, 0, 26, 0.35);
+	}
+
+	.glass-button:hover {
+		background: linear-gradient(135deg, rgba(143, 0, 26, 1), rgba(143, 0, 26, 0.75));
+	}
+
+	.glass-button-secondary {
+		@apply text-gray-100 font-semibold rounded-lg transition-colors;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.glass-button-secondary:hover {
+		background: rgba(255, 255, 255, 0.14);
+	}
+
+	.glass-icon-button {
+		@apply rounded-full transition-colors;
+		background: rgba(255, 255, 255, 0.08);
+		border: 1px solid rgba(255, 255, 255, 0.12);
+	}
+
+	.glass-icon-button:hover {
+		background: rgba(255, 255, 255, 0.16);
+	}
+
+	.glass-pill {
+		background: rgba(143, 0, 26, 0.2);
+		border: 1px solid rgba(143, 0, 26, 0.45);
+		color: #f2d6db;
+	}
+}

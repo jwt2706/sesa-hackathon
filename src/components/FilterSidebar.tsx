@@ -31,12 +31,12 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 h-fit">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
+    <div className="glass-card rounded-lg p-6 h-fit">
+      <h3 className="text-lg font-semibold text-gray-100 mb-4">Filters</h3>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Price Range
           </label>
           <div className="flex gap-2">
@@ -47,7 +47,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
               onChange={(e) =>
                 handleFilterChange('priceMin', e.target.value ? Number(e.target.value) : undefined)
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="glass-input text-sm px-3 py-2"
             />
             <input
               type="number"
@@ -56,13 +56,13 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
               onChange={(e) =>
                 handleFilterChange('priceMax', e.target.value ? Number(e.target.value) : undefined)
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="glass-input text-sm px-3 py-2"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Bedrooms
           </label>
           <select
@@ -70,7 +70,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             onChange={(e) =>
               handleFilterChange('bedrooms', e.target.value ? Number(e.target.value) : undefined)
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="glass-input text-sm px-3 py-2"
           >
             <option value="">Any</option>
             {[1, 2, 3, 4, 5].map((num) => (
@@ -82,7 +82,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Bathrooms
           </label>
           <select
@@ -90,7 +90,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
             onChange={(e) =>
               handleFilterChange('bathrooms', e.target.value ? Number(e.target.value) : undefined)
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="glass-input text-sm px-3 py-2"
           >
             <option value="">Any</option>
             {[1, 1.5, 2, 2.5, 3].map((num) => (
@@ -102,7 +102,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Location
           </label>
           <div className="space-y-2">
@@ -112,9 +112,9 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                 name="location"
                 checked={filters.isOnCampus === undefined}
                 onChange={() => handleFilterChange('isOnCampus', undefined)}
-                className="mr-2"
+                className="mr-2 accent-blue-600"
               />
-              <span className="text-sm">All</span>
+              <span className="text-sm text-gray-300">All</span>
             </label>
             <label className="flex items-center">
               <input
@@ -122,9 +122,9 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                 name="location"
                 checked={filters.isOnCampus === true}
                 onChange={() => handleFilterChange('isOnCampus', true)}
-                className="mr-2"
+                className="mr-2 accent-blue-600"
               />
-              <span className="text-sm">On Campus</span>
+              <span className="text-sm text-gray-300">On Campus</span>
             </label>
             <label className="flex items-center">
               <input
@@ -132,21 +132,21 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                 name="location"
                 checked={filters.isOnCampus === false}
                 onChange={() => handleFilterChange('isOnCampus', false)}
-                className="mr-2"
+                className="mr-2 accent-blue-600"
               />
-              <span className="text-sm">Off Campus</span>
+              <span className="text-sm text-gray-300">Off Campus</span>
             </label>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Gender Preference
           </label>
           <select
             value={filters.genderPreference || 'any'}
             onChange={(e) => handleFilterChange('genderPreference', e.target.value as any)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="glass-input text-sm px-3 py-2"
           >
             <option value="any">Any</option>
             <option value="male">Male Only</option>
@@ -155,7 +155,7 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Rental Type
           </label>
           <div className="space-y-2">
@@ -165,16 +165,16 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                   type="checkbox"
                   checked={(filters.rentalType || []).includes(type)}
                   onChange={() => handleRentalTypeToggle(type)}
-                  className="mr-2"
+                  className="mr-2 accent-blue-600"
                 />
-                <span className="text-sm capitalize">{type}</span>
+                <span className="text-sm text-gray-300 capitalize">{type}</span>
               </label>
             ))}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
             Amenities
           </label>
           <div className="space-y-2">
@@ -185,9 +185,9 @@ export function FilterSidebar({ onFilterChange }: FilterSidebarProps) {
                     type="checkbox"
                     checked={(filters.amenities || []).includes(amenity)}
                     onChange={() => handleAmenityToggle(amenity)}
-                    className="mr-2"
+                    className="mr-2 accent-blue-600"
                   />
-                  <span className="text-sm">{amenity}</span>
+                  <span className="text-sm text-gray-300">{amenity}</span>
                 </label>
               )
             )}

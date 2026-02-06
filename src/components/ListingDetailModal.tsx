@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { X, ChevronLeft, ChevronRight, MapPin, Bed, Bath, DollarSign, Calendar } from 'lucide-react';
+import {
+  FaXmark,
+  FaChevronLeft,
+  FaChevronRight,
+  FaMapPin,
+  FaBed,
+  FaBath,
+  FaDollarSign,
+  FaCalendarDays,
+} from 'react-icons/fa6';
 import { Listing } from '../types/database';
 import { useAuth } from '../contexts/AuthContext';
 import { applicationService } from '../services/api';
@@ -49,15 +58,15 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">{listing.title}</h2>
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+      <div className="glass-panel rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 glass-header p-4 flex justify-between items-center">
+          <h2 className="text-2xl font-bold text-gray-100">{listing.title}</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 glass-icon-button"
           >
-            <X size={24} />
+            <FaXmark size={24} />
           </button>
         </div>
 
@@ -72,17 +81,17 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
               <>
                 <button
                   onClick={prevImage}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 p-2 rounded-full hover:bg-black/60 transition-all"
                 >
-                  <ChevronLeft size={24} />
+                  <FaChevronLeft size={24} />
                 </button>
                 <button
                   onClick={nextImage}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-75 p-2 rounded-full hover:bg-opacity-100 transition-all"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 p-2 rounded-full hover:bg-black/60 transition-all"
                 >
-                  <ChevronRight size={24} />
+                  <FaChevronRight size={24} />
                 </button>
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
                   {currentImageIndex + 1} / {images.length}
                 </div>
               </>
@@ -92,85 +101,85 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <DollarSign className="text-green-600" size={24} />
+                <FaDollarSign className="text-blue-300" size={24} />
                 <div>
-                  <p className="text-sm text-gray-600">Price</p>
-                  <p className="text-2xl font-bold text-gray-900">${listing.price}/mo</p>
+                  <p className="text-sm text-gray-400">Price</p>
+                  <p className="text-2xl font-bold text-gray-100">${listing.price}/mo</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 mb-4">
-                <MapPin className="text-blue-600" size={24} />
+                <FaMapPin className="text-blue-300" size={24} />
                 <div>
-                  <p className="text-sm text-gray-600">Address</p>
-                  <p className="text-gray-900">{listing.address}</p>
+                  <p className="text-sm text-gray-400">Address</p>
+                  <p className="text-gray-100">{listing.address}</p>
                 </div>
               </div>
 
               <div className="flex gap-4 mb-4">
                 <div className="flex items-center gap-2">
-                  <Bed className="text-gray-600" size={20} />
-                  <span className="text-gray-900">{listing.bedrooms} Bedrooms</span>
+                  <FaBed className="text-gray-400" size={20} />
+                  <span className="text-gray-100">{listing.bedrooms} Bedrooms</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Bath className="text-gray-600" size={20} />
-                  <span className="text-gray-900">{listing.bathrooms} Bathrooms</span>
+                  <FaBath className="text-gray-400" size={20} />
+                  <span className="text-gray-100">{listing.bathrooms} Bathrooms</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="text-gray-600" size={20} />
+                <FaCalendarDays className="text-gray-400" size={20} />
                 <div>
-                  <p className="text-sm text-gray-600">Available From</p>
-                  <p className="text-gray-900">{new Date(listing.available_from).toLocaleDateString()}</p>
+                  <p className="text-sm text-gray-400">Available From</p>
+                  <p className="text-gray-100">{new Date(listing.available_from).toLocaleDateString()}</p>
                 </div>
               </div>
             </div>
 
             <div>
               <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Type</p>
-                <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm capitalize">
+                <p className="text-sm text-gray-400 mb-2">Type</p>
+                <span className="px-3 py-1 rounded-full text-sm capitalize glass-pill">
                   {listing.rental_type}
                 </span>
               </div>
 
               <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Location Type</p>
-                <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm">
+                <p className="text-sm text-gray-400 mb-2">Location Type</p>
+                <span className="px-3 py-1 bg-white/5 text-gray-300 rounded-full text-sm border border-white/10">
                   {listing.is_on_campus ? 'On Campus' : 'Off Campus'}
                 </span>
               </div>
 
               {listing.gender_preference !== 'any' && (
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-2">Gender Preference</p>
-                  <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm capitalize">
+                  <p className="text-sm text-gray-400 mb-2">Gender Preference</p>
+                  <span className="px-3 py-1 bg-white/5 text-gray-300 rounded-full text-sm border border-white/10 capitalize">
                     {listing.gender_preference} Only
                   </span>
                 </div>
               )}
 
               <div className="mb-4">
-                <p className="text-sm text-gray-600 mb-2">Lease Duration</p>
-                <p className="text-gray-900">{listing.lease_duration}</p>
+                <p className="text-sm text-gray-400 mb-2">Lease Duration</p>
+                <p className="text-gray-100">{listing.lease_duration}</p>
               </div>
             </div>
           </div>
 
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-700 whitespace-pre-wrap">{listing.description}</p>
+            <h3 className="text-lg font-semibold text-gray-100 mb-2">Description</h3>
+            <p className="text-gray-300 whitespace-pre-wrap">{listing.description}</p>
           </div>
 
           {listing.amenities.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Amenities</h3>
+              <h3 className="text-lg font-semibold text-gray-100 mb-2">Amenities</h3>
               <div className="flex flex-wrap gap-2">
                 {listing.amenities.map((amenity) => (
                   <span
                     key={amenity}
-                    className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                    className="px-3 py-1 bg-white/5 text-gray-300 rounded-full text-sm border border-white/10"
                   >
                     {amenity}
                   </span>
@@ -180,18 +189,18 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
           )}
 
           {profile && !profile.is_landlord && (
-            <div className="border-t pt-6">
+            <div className="border-t border-white/10 pt-6">
               {success ? (
-                <div className="bg-green-50 text-green-700 p-4 rounded-lg text-center">
+                <div className="bg-green-900/40 text-green-200 p-4 rounded-lg text-center border border-green-500/30">
                   Application submitted successfully!
                 </div>
               ) : !applyMode ? (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Apply for this listing</h3>
+                  <h3 className="text-lg font-semibold text-gray-100">Apply for this listing</h3>
                   <div className="flex gap-4">
                     <button
                       onClick={() => setApplyMode('individual')}
-                      className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                      className="flex-1 py-3 glass-button"
                     >
                       Apply as Individual
                     </button>
@@ -203,7 +212,7 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
                           alert('You need to join a group first!');
                         }
                       }}
-                      className="flex-1 bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 py-3 glass-button-secondary disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={!profile.group_id}
                     >
                       Apply as Group
@@ -212,27 +221,27 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-900">
+                  <h3 className="text-lg font-semibold text-gray-100">
                     Application {applyMode === 'group' ? '(Group)' : '(Individual)'}
                   </h3>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell the landlord why you'd be a great tenant..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="glass-input px-4 py-3"
                     rows={4}
                   />
                   <div className="flex gap-4">
                     <button
                       onClick={() => setApplyMode(null)}
-                      className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+                      className="flex-1 py-3 glass-button-secondary"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={handleApply}
                       disabled={applying}
-                      className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                      className="flex-1 py-3 glass-button disabled:opacity-50"
                     >
                       {applying ? 'Submitting...' : 'Submit Application'}
                     </button>

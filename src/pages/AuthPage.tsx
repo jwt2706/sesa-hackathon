@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowLeft } from 'lucide-react';
+import { FaArrowLeft } from 'react-icons/fa6';
 
 interface AuthPageProps {
   mode: 'login' | 'signup';
@@ -35,28 +35,28 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <button
           onClick={onBack}
-          className="mb-6 flex items-center gap-2 text-blue-700 hover:text-blue-900 transition-colors"
+          className="mb-6 flex items-center gap-2 text-gray-300 hover:text-gray-100 transition-colors"
         >
-          <ArrowLeft size={20} />
+          <FaArrowLeft size={20} />
           Back
         </button>
 
-        <div className="bg-white rounded-lg shadow-xl p-8">
-          <h2 className="text-3xl font-bold text-blue-900 mb-2 text-center">
+        <div className="glass-panel rounded-2xl p-8">
+          <h2 className="text-3xl font-bold text-gray-100 mb-2 text-center">
             {mode === 'login' ? 'Welcome Back' : 'Join UOttaLive'}
           </h2>
-          <p className="text-gray-600 text-center mb-6">
+          <p className="text-gray-400 text-center mb-6">
             {mode === 'login' ? 'Login to your account' : 'Create your account'}
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-300 mb-1">
                   Name
                 </label>
                 <input
@@ -64,14 +64,14 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="glass-input"
                   placeholder="Your name"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Email
               </label>
               <input
@@ -79,13 +79,13 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="glass-input"
                 placeholder="your.email@example.com"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-300 mb-1">
                 Password
               </label>
               <input
@@ -93,7 +93,7 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="glass-input"
                 placeholder="••••••••"
               />
             </div>
@@ -104,15 +104,15 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
                 id="isLandlord"
                 checked={isLandlord}
                 onChange={(e) => setIsLandlord(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                className="w-4 h-4 text-blue-600 border-white/20 rounded focus:ring-blue-600"
               />
-              <label htmlFor="isLandlord" className="ml-2 text-sm text-gray-700">
+              <label htmlFor="isLandlord" className="ml-2 text-sm text-gray-300">
                 I am a landlord
               </label>
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm bg-red-50 p-3 rounded-lg">
+              <div className="text-red-200 text-sm bg-red-900/40 p-3 rounded-lg border border-red-500/30">
                 {error}
               </div>
             )}
@@ -120,7 +120,7 @@ export function AuthPage({ mode, onBack }: AuthPageProps) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3 glass-button disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Loading...' : mode === 'login' ? 'Login' : 'Sign Up'}
             </button>
