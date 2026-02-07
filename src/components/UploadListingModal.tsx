@@ -12,29 +12,33 @@ interface UploadListingModalProps {
 
 export function UploadListingModal({ onClose, onSuccess, existingListing }: UploadListingModalProps) {
   const leaseOptions = ['4 months', '8 months', '12 months', '16 months'];
-  const initialLeaseDuration = leaseOptions.includes(existingListing?.lease_duration ?? '')
-    ? existingListing?.lease_duration ?? '12 months'
-    : '12 months';
+  const buildFormData = (listing?: Listing) => {
+    const leaseDuration = leaseOptions.includes(listing?.lease_duration ?? '')
+      ? listing?.lease_duration ?? '12 months'
+      : '12 months';
+
+    return {
+      title: listing?.title || '',
+      description: listing?.description || '',
+      address: listing?.address || '',
+      price: listing?.price || 0,
+      bedrooms: listing?.bedrooms || 1,
+      bathrooms: listing?.bathrooms || 1,
+      is_on_campus: listing?.is_on_campus || false,
+      gender_preference: listing?.gender_preference || 'any',
+      rental_type: listing?.rental_type || 'apartment',
+      amenities: listing?.amenities || ([] as string[]),
+      available_from: listing?.available_from || new Date().toISOString().split('T')[0],
+      lease_duration: leaseDuration,
+    };
+  };
   const createUploadId = () => {
     if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
       return crypto.randomUUID();
     }
     return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   };
-  const [formData, setFormData] = useState({
-    title: existingListing?.title || '',
-    description: existingListing?.description || '',
-    address: existingListing?.address || '',
-    price: existingListing?.price || 0,
-    bedrooms: existingListing?.bedrooms || 1,
-    bathrooms: existingListing?.bathrooms || 1,
-    is_on_campus: existingListing?.is_on_campus || false,
-    gender_preference: existingListing?.gender_preference || 'any',
-    rental_type: existingListing?.rental_type || 'apartment',
-    amenities: existingListing?.amenities || [] as string[],
-    available_from: existingListing?.available_from || new Date().toISOString().split('T')[0],
-    lease_duration: initialLeaseDuration,
-  });
+  const [formData, setFormData] = useState(buildFormData(existingListing));
 
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -52,6 +56,12 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
       imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
     };
   }, [imagePreviews]);
+
+  useEffect(() => {
+    setFormData(buildFormData(existingListing));
+    setImageFiles([]);
+    setExpandedPreview(null);
+  }, [existingListing?.id]);
 
   const handleAmenityToggle = (amenity: string) => {
     setFormData((prev) => ({
