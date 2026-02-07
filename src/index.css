@@ -119,6 +119,17 @@
 		backdrop-filter: none !important;
 	}
 
+	/* Make dashboard tabs/buttons more opaque */
+	.dashboard-background .glass-button {
+		background: #8f001a !important;
+		box-shadow: 0 10px 22px rgba(143, 0, 26, 0.35) !important;
+	}
+
+	.dashboard-background .glass-button-secondary {
+		background: rgba(24, 24, 24, 0.95) !important;
+		border-color: rgba(255, 255, 255, 0.1) !important;
+	}
+
 	.auth-content {
 		position: relative;
 		z-index: 2;
