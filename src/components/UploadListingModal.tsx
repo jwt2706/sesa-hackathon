@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FaXmark } from 'react-icons/fa6';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 import { listingService } from '../services/api';
 import { supabase } from '../lib/supabase';
 import { Listing } from '../types/database';
+import { AddressMapModal } from './AddressMapModal';
 
 interface UploadListingModalProps {
   onClose: () => void;
@@ -42,6 +44,8 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
 
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [showAddressMap, setShowAddressMap] = useState(false);
+  const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
   const [expandedPreview, setExpandedPreview] = useState<string | null>(null);
   const imagePreviews = useMemo(
     () => imageFiles.map((file) => ({
@@ -70,6 +74,21 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
         ? prev.amenities.filter((a) => a !== amenity)
         : [...prev.amenities, amenity],
     }));
+  };
+
+  const validateNumericInput = (value: string, fieldName: string, min = 0) => {
+    const numValue = parseFloat(value);
+    if (isNaN(numValue) || numValue < min) {
+      setFormErrors(prev => ({ ...prev, [fieldName]: `Must be a valid number ${min > 0 ? `greater than ${min}` : 'greater than or equal to 0'}` }));
+      return false;
+    }
+    setFormErrors(prev => ({ ...prev, [fieldName]: '' }));
+    return true;
+  };
+
+  const handleAddressSelect = (address: string, lat: number, lng: number) => {
+    setFormData(prev => ({ ...prev, address }));
+    setFormErrors(prev => ({ ...prev, address: '' }));
   };
 
   const uploadListingImages = async () => {
@@ -173,14 +192,28 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
             <label className="block text-sm font-medium text-gray-300 mb-1">
               Address *
             </label>
-            <input
-              type="text"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              required
-              className="glass-input"
-              placeholder="123 Main St, Ottawa, ON"
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={formData.address}
+                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                required
+                className="glass-input flex-1"
+                placeholder="123 Main St, Ottawa, ON"
+              />
+              <button
+                type="button"
+                onClick={() => setShowAddressMap(true)}
+                className="px-4 py-2 glass-button-secondary flex items-center gap-2"
+                title="Select address on map"
+              >
+                <FaMapMarkerAlt />
+                Map
+              </button>
+            </div>
+            {formErrors.address && (
+              <p className="text-red-400 text-sm mt-1">{formErrors.address}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -189,13 +222,24 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
                 Price per Month * ($)
               </label>
               <input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                type="text"
+                value={formData.price || ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (validateNumericInput(value, 'price', 0)) {
+                    setFormData({ ...formData, price: parseFloat(value) || 0 });
+                  } else {
+                    setFormData({ ...formData, price: 0 });
+                  }
+                }}
+                onBlur={(e) => validateNumericInput(e.target.value, 'price', 0)}
                 required
-                min="0"
                 className="glass-input"
+                placeholder="1200"
               />
+              {formErrors.price && (
+                <p className="text-red-400 text-sm mt-1">{formErrors.price}</p>
+              )}
             </div>
 
             <div>
@@ -203,13 +247,24 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
                 Bedrooms *
               </label>
               <input
-                type="number"
-                value={formData.bedrooms}
-                onChange={(e) => setFormData({ ...formData, bedrooms: Number(e.target.value) })}
+                type="text"
+                value={formData.bedrooms || ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (validateNumericInput(value, 'bedrooms', 1)) {
+                    setFormData({ ...formData, bedrooms: parseInt(value) || 1 });
+                  } else {
+                    setFormData({ ...formData, bedrooms: 1 });
+                  }
+                }}
+                onBlur={(e) => validateNumericInput(e.target.value, 'bedrooms', 1)}
                 required
-                min="1"
                 className="glass-input"
+                placeholder="2"
               />
+              {formErrors.bedrooms && (
+                <p className="text-red-400 text-sm mt-1">{formErrors.bedrooms}</p>
+              )}
             </div>
           </div>
 
@@ -219,14 +274,24 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
                 Bathrooms *
               </label>
               <input
-                type="number"
-                value={formData.bathrooms}
-                onChange={(e) => setFormData({ ...formData, bathrooms: Number(e.target.value) })}
+                type="text"
+                value={formData.bathrooms || ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (validateNumericInput(value, 'bathrooms', 0.5)) {
+                    setFormData({ ...formData, bathrooms: parseFloat(value) || 1 });
+                  } else {
+                    setFormData({ ...formData, bathrooms: 1 });
+                  }
+                }}
+                onBlur={(e) => validateNumericInput(e.target.value, 'bathrooms', 0.5)}
                 required
-                min="1"
-                step="0.5"
                 className="glass-input"
+                placeholder="1.5"
               />
+              {formErrors.bathrooms && (
+                <p className="text-red-400 text-sm mt-1">{formErrors.bathrooms}</p>
+              )}
             </div>
 
             <div>
@@ -424,6 +489,13 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
           </div>
         </form>
       </div>
+      
+      <AddressMapModal
+        isOpen={showAddressMap}
+        onClose={() => setShowAddressMap(false)}
+        onAddressSelect={handleAddressSelect}
+        initialAddress={formData.address}
+      />
       {expandedPreview && (
         <div
           className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"

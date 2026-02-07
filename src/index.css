@@ -91,6 +91,7 @@
 			rgba(45, 45, 44, 0.6) 100%
 		);
 		z-index: 1;
+		pointer-events: none;
 	}
 
 	/* Make dashboard content panels more solid for readability over the photo */
@@ -117,6 +118,17 @@
 	.dashboard-background .glass-button-secondary,
 	.dashboard-background .glass-button {
 		backdrop-filter: none !important;
+	}
+
+	/* Make dashboard tabs/buttons more opaque */
+	.dashboard-background .glass-button {
+		background: #8f001a !important;
+		box-shadow: 0 10px 22px rgba(143, 0, 26, 0.35) !important;
+	}
+
+	.dashboard-background .glass-button-secondary {
+		background: rgba(24, 24, 24, 0.95) !important;
+		border-color: rgba(255, 255, 255, 0.1) !important;
 	}
 
 	.auth-content {
