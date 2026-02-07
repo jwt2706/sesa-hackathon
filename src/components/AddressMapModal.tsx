@@ -64,15 +64,24 @@ export function AddressMapModal({ isOpen, onClose, onAddressSelect, initialAddre
     }
   }, [isOpen]);
 
-  const formatLocationAddress = (lat: number, lng: number) => {
-    // Create a more user-friendly address format
-    const streetNumber = Math.floor(Math.abs(lat * lng * 1000) % 999) + 1;
-    const streets = ['Nelson Street', 'Somerset Street', 'Bank Street', 'Elgin Street', 'Kent Street', 'O\'Connor Street', 'Metcalfe Street', 'Bay Street', 'Lyon Street', 'Preston Street'];
-    const streetName = streets[Math.floor(Math.abs(lat * lng * 10) % streets.length)];
-    return `${streetNumber} ${streetName}, Ottawa, ON`;
+  const reverseGeocode = async (lat: number, lng: number) => {
+    const params = new URLSearchParams({
+      lat: lat.toString(),
+      lon: lng.toString(),
+      format: 'jsonv2',
+      addressdetails: '1',
+      zoom: '18',
+    });
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`);
+    if (!response.ok) {
+      throw new Error('Reverse geocoding failed');
+    }
+    const data = await response.json();
+    return data?.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
   };
 
   const handleMapClick = async (lat: number, lng: number, map: L.Map) => {
+    setLoading(true);
     // Remove existing marker
     if (markerRef.current) {
       map.removeLayer(markerRef.current);
@@ -82,20 +91,31 @@ export function AddressMapModal({ isOpen, onClose, onAddressSelect, initialAddre
     const marker = L.marker([lat, lng]).addTo(map);
     markerRef.current = marker;
 
-    // Create a formatted address that looks real
-    const formattedAddress = formatLocationAddress(lat, lng);
-    setSelectedLocation({ lat, lng, address: formattedAddress });
-    
-    // Add popup with the formatted address
-    marker.bindPopup(`
-      <div style="max-width: 250px;">
-        <strong>📍 Selected Location</strong><br/>
-        ${formattedAddress}<br/>
-        <small style="color: #999;">
-          Coordinates: ${lat.toFixed(4)}, ${lng.toFixed(4)}
-        </small>
-      </div>
-    `).openPopup();
+    try {
+      const formattedAddress = await reverseGeocode(lat, lng);
+      setSelectedLocation({ lat, lng, address: formattedAddress });
+      marker.bindPopup(`
+        <div style="max-width: 250px;">
+          <strong>📍 Selected Location</strong><br/>
+          ${formattedAddress}<br/>
+          <small style="color: #999;">
+            Coordinates: ${lat.toFixed(4)}, ${lng.toFixed(4)}
+          </small>
+        </div>
+      `).openPopup();
+    } catch (error) {
+      console.error('Reverse geocoding failed:', error);
+      const fallbackAddress = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      setSelectedLocation({ lat, lng, address: fallbackAddress });
+      marker.bindPopup(`
+        <div style="max-width: 250px;">
+          <strong>📍 Selected Location</strong><br/>
+          ${fallbackAddress}
+        </div>
+      `).openPopup();
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleConfirm = () => {
@@ -143,7 +163,7 @@ export function AddressMapModal({ isOpen, onClose, onAddressSelect, initialAddre
               <li>• Use mouse wheel or +/- buttons to zoom in for precision</li>
               <li>• Drag the map to navigate to your area</li>
               <li>• Click "Reset" to clear your selection and start over</li>
-              <li>• Click "Use This Location" when you're satisfied with the pin placement</li>
+              <li>• Click "Add This Location" when you're satisfied with the pin placement</li>
             </ul>
             <div className="mt-3 p-3 bg-blue-900/20 border border-blue-500/30 rounded-lg">
               <p className="text-blue-200 text-sm">
@@ -152,13 +172,19 @@ export function AddressMapModal({ isOpen, onClose, onAddressSelect, initialAddre
             </div>
           </div>
 
-          {/* Reset Button */}
-          <div className="flex justify-center">
+          {/* Reset + Save Buttons */}
+          <div className="flex justify-center gap-3">
             <button
               type="button"
               onClick={resetMap}
               className="px-6 py-2 glass-button-secondary"
             >Reset Map View</button>
+            <button
+              type="button"
+              onClick={handleConfirm}
+              disabled={!selectedLocation}
+              className="px-6 py-2 glass-button disabled:opacity-50"
+            >Add This Location</button>
           </div>
 
           {/* Map Container */}
@@ -184,7 +210,7 @@ export function AddressMapModal({ isOpen, onClose, onAddressSelect, initialAddre
               <li>• <strong>Click anywhere on the map</strong> to place a pin at your exact property location</li>
               <li>• Use zoom controls (+/-) or mouse wheel to get closer for precision</li>
               <li>• Drag the map to navigate to your area in Ottawa</li>
-              <li>• Click "Use This Location" when you're satisfied with your pin placement</li>
+              <li>• Click "Add This Location" when you're satisfied with your pin placement</li>
             </ul>
           </div>
 
@@ -219,7 +245,7 @@ export function AddressMapModal({ isOpen, onClose, onAddressSelect, initialAddre
               disabled={!selectedLocation}
               className="flex-1 py-3 px-6 glass-button disabled:opacity-50 text-lg font-medium transition-all duration-200"
             >
-              {selectedLocation ? '✅ Use This Location' : '📍 Click on Map to Select'}
+              {selectedLocation ? '✅ Add This Location' : '📍 Click on Map to Select'}
             </button>
           </div>
         </div>
