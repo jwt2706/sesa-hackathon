@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Header from './components/Header';
 import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
 import { StudentDashboard } from './pages/StudentDashboard';
@@ -45,6 +46,7 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
+      <Header />
       <AppContent />
     </AuthProvider>
   );
