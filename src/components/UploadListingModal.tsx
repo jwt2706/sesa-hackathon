@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { listingService } from '../services/api';
@@ -14,34 +14,58 @@ interface UploadListingModalProps {
 
 export function UploadListingModal({ onClose, onSuccess, existingListing }: UploadListingModalProps) {
   const leaseOptions = ['4 months', '8 months', '12 months', '16 months'];
-  const initialLeaseDuration = leaseOptions.includes(existingListing?.lease_duration ?? '')
-    ? existingListing?.lease_duration ?? '12 months'
-    : '12 months';
+  const buildFormData = (listing?: Listing) => {
+    const leaseDuration = leaseOptions.includes(listing?.lease_duration ?? '')
+      ? listing?.lease_duration ?? '12 months'
+      : '12 months';
+
+    return {
+      title: listing?.title || '',
+      description: listing?.description || '',
+      address: listing?.address || '',
+      price: listing?.price || 0,
+      bedrooms: listing?.bedrooms || 1,
+      bathrooms: listing?.bathrooms || 1,
+      is_on_campus: listing?.is_on_campus || false,
+      gender_preference: listing?.gender_preference || 'any',
+      rental_type: listing?.rental_type || 'apartment',
+      amenities: listing?.amenities || ([] as string[]),
+      available_from: listing?.available_from || new Date().toISOString().split('T')[0],
+      lease_duration: leaseDuration,
+    };
+  };
   const createUploadId = () => {
     if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
       return crypto.randomUUID();
     }
     return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   };
-  const [formData, setFormData] = useState({
-    title: existingListing?.title || '',
-    description: existingListing?.description || '',
-    address: existingListing?.address || '',
-    price: existingListing?.price || 0,
-    bedrooms: existingListing?.bedrooms || 1,
-    bathrooms: existingListing?.bathrooms || 1,
-    is_on_campus: existingListing?.is_on_campus || false,
-    gender_preference: existingListing?.gender_preference || 'any',
-    rental_type: existingListing?.rental_type || 'apartment',
-    amenities: existingListing?.amenities || [] as string[],
-    available_from: existingListing?.available_from || new Date().toISOString().split('T')[0],
-    lease_duration: initialLeaseDuration,
-  });
+  const [formData, setFormData] = useState(buildFormData(existingListing));
 
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [showAddressMap, setShowAddressMap] = useState(false);
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [expandedPreview, setExpandedPreview] = useState<string | null>(null);
+  const imagePreviews = useMemo(
+    () => imageFiles.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    })),
+    [imageFiles]
+  );
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [imagePreviews]);
+
+  useEffect(() => {
+    setFormData(buildFormData(existingListing));
+    setImageFiles([]);
+    setExpandedPreview(null);
+  }, [existingListing?.id]);
 
   const handleAmenityToggle = (amenity: string) => {
     setFormData((prev) => ({
@@ -391,7 +415,20 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
               accept="image/*"
               multiple
               className="glass-input"
-              onChange={(e) => setImageFiles(Array.from(e.target.files ?? []))}
+              onChange={(e) => {
+                const selected = Array.from(e.target.files ?? []);
+                if (selected.length === 0) return;
+                setImageFiles((prev) => {
+                  const combined = [...prev, ...selected];
+                  const unique = new Map(
+                    combined.map((file) => [
+                      `${file.name}-${file.size}-${file.lastModified}`,
+                      file,
+                    ])
+                  );
+                  return Array.from(unique.values());
+                });
+              }}
             />
             {existingListing?.image_urls?.length ? (
               <p className="text-xs text-gray-500 mt-2">
@@ -401,6 +438,36 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
               <p className="text-xs text-gray-500 mt-2">
                 Upload one or more images. PNG or JPG recommended.
               </p>
+            )}
+            {imagePreviews.length > 0 && (
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                {imagePreviews.map(({ file, url }) => (
+                  <div key={url} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedPreview(url)}
+                      className="h-24 w-full rounded-lg overflow-hidden border border-white/10"
+                    >
+                      <img
+                        src={url}
+                        alt={file.name}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImageFiles((prev) =>
+                          prev.filter((item) => item !== file)
+                        )
+                      }
+                      className="absolute top-1 right-1 h-7 w-7 text-xs glass-icon-button"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
@@ -429,6 +496,26 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
         onAddressSelect={handleAddressSelect}
         initialAddress={formData.address}
       />
+      {expandedPreview && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
+          onClick={() => setExpandedPreview(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setExpandedPreview(null)}
+            className="absolute top-6 right-6 h-10 w-10 glass-icon-button"
+          >
+            <FaXmark size={18} />
+          </button>
+          <img
+            src={expandedPreview}
+            alt="Listing preview"
+            className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }

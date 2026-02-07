@@ -20,6 +20,7 @@ export function LandlordDashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
   const [filters, setFilters] = useState<ListingFilters>({});
 
   useEffect(() => {
@@ -81,22 +82,30 @@ export function LandlordDashboard() {
     }
   };
 
+  const handleEditListing = (listing: Listing) => {
+    setEditingListing(listing);
+    setShowUploadModal(true);
+  };
+
+  const handleDeleteListing = async (listingId: string) => {
+    if (!confirm('Delete this listing? This cannot be undone.')) return;
+
+    setLoading(true);
+    try {
+      await listingService.deleteListing(listingId);
+      await loadMyListings();
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+      alert('Failed to delete listing. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen">
-      <header className="glass-header">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-100">UOttaLive</h1>
-          <button
-            onClick={signOut}
-            className="flex items-center gap-2 px-4 py-2 glass-button-secondary"
-          >
-            <FaRightFromBracket size={18} />
-            Logout
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen dashboard-background">
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-12 gap-6">
@@ -270,11 +279,26 @@ export function LandlordDashboard() {
                 ) : (
                   <div className="space-y-4">
                     {myListings.map((listing) => (
-                      <ListingCard
-                        key={listing.id}
-                        listing={listing}
-                        onViewClick={setSelectedListing}
-                      />
+                      <div key={listing.id} className="space-y-3">
+                        <ListingCard
+                          listing={listing}
+                          onViewClick={setSelectedListing}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleEditListing(listing)}
+                            className="flex-1 py-2 glass-button-secondary"
+                          >
+                            Edit Listing
+                          </button>
+                          <button
+                            onClick={() => handleDeleteListing(listing.id)}
+                            className="flex-1 py-2 bg-red-900/60 text-red-200 rounded-lg border border-red-500/40 hover:bg-red-900/80 transition-colors"
+                          >
+                            Delete Listing
+                          </button>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -297,9 +321,14 @@ export function LandlordDashboard() {
 
       {showUploadModal && (
         <UploadListingModal
-          onClose={() => setShowUploadModal(false)}
+          existingListing={editingListing ?? undefined}
+          onClose={() => {
+            setShowUploadModal(false);
+            setEditingListing(null);
+          }}
           onSuccess={() => {
             setShowUploadModal(false);
+            setEditingListing(null);
             if (activeTab === 'compare') {
               loadListings();
             }
