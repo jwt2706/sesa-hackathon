@@ -75,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     phone: string,
     isLandlord: boolean
   ) => {
+    // Create the user account
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -82,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) throw error;
 
+    // Insert profile record when user exists
     if (data.user) {
       const { error: profileError } = await supabase.from('profiles').insert({
         id: data.user.id,
@@ -92,6 +94,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (profileError) throw profileError;
+
+      // Attempt to sign in immediately after creating the account so the user
+      // is logged in and routed to the dashboard without an extra step.
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        // If auto sign-in fails, throw so the caller can show an error.
+        throw signInError;
+      }
     }
   };
 
