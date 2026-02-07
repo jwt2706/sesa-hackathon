@@ -68,6 +68,56 @@
 		z-index: 1;
 	}
 
+	.dashboard-background {
+		background-image: url('./assets/tabaret.jpg');
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		position: relative;
+	}
+
+	.dashboard-background::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: linear-gradient(
+			135deg,
+			rgba(45, 45, 44, 0.75) 0%,
+			rgba(45, 45, 44, 0.45) 50%,
+			rgba(45, 45, 44, 0.6) 100%
+		);
+		z-index: 1;
+	}
+
+	/* Make dashboard content panels more solid for readability over the photo */
+	.dashboard-background .glass-panel,
+	.dashboard-background .glass-card {
+		background: rgba(18,18,18,0.92) !important;
+		border: 1px solid rgba(255,255,255,0.04) !important;
+		box-shadow: 0 12px 30px rgba(0,0,0,0.6) !important;
+		backdrop-filter: none !important;
+		color: #f6f4f3;
+		position: relative;
+		z-index: 2;
+	}
+
+	.dashboard-background .glass-header {
+		background: rgba(18,18,18,0.98) !important;
+		border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+		backdrop-filter: none !important;
+		z-index: 3;
+	}
+
+	/* Ensure panels inside the dashboard remain readable */
+	.dashboard-background .glass-input,
+	.dashboard-background .glass-button-secondary,
+	.dashboard-background .glass-button {
+		backdrop-filter: none !important;
+	}
+
 	.auth-content {
 		position: relative;
 		z-index: 2;

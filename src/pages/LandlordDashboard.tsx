@@ -105,7 +105,7 @@ export function LandlordDashboard() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen dashboard-background">
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="grid grid-cols-12 gap-6">
