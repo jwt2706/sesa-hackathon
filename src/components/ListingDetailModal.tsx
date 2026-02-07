@@ -21,6 +21,7 @@ interface ListingDetailModalProps {
 export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
   const { profile } = useAuth();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isImageExpanded, setIsImageExpanded] = useState(false);
   const [message, setMessage] = useState('');
   const [applyMode, setApplyMode] = useState<'individual' | 'group' | null>(null);
   const [applying, setApplying] = useState(false);
@@ -75,7 +76,8 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
             <img
               src={images[currentImageIndex]}
               alt={`${listing.title} - Image ${currentImageIndex + 1}`}
-              className="w-full h-96 object-cover rounded-lg"
+              className="w-full h-96 object-cover object-center rounded-lg cursor-zoom-in"
+              onClick={() => setIsImageExpanded(true)}
             />
             {images.length > 1 && (
               <>
@@ -97,6 +99,51 @@ export function ListingDetailModal({ listing, onClose }: ListingDetailModalProps
               </>
             )}
           </div>
+          {images.length > 1 && (
+            <div className="mb-6 flex gap-3 overflow-x-auto pb-2">
+              {images.map((image, index) => (
+                <button
+                  key={`${image}-${index}`}
+                  type="button"
+                  onClick={() => setCurrentImageIndex(index)}
+                  className={`relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border transition-colors ${
+                    index === currentImageIndex
+                      ? 'border-blue-500/70'
+                      : 'border-white/10'
+                  }`}
+                >
+                  <img
+                    src={image}
+                    alt={`${listing.title} thumbnail ${index + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                  {index === currentImageIndex && (
+                    <span className="absolute inset-0 bg-blue-500/10" />
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+          {isImageExpanded && (
+            <div
+              className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-6"
+              onClick={() => setIsImageExpanded(false)}
+            >
+              <button
+                type="button"
+                onClick={() => setIsImageExpanded(false)}
+                className="absolute top-6 right-6 h-10 w-10 glass-icon-button"
+              >
+                <FaXmark size={18} />
+              </button>
+              <img
+                src={images[currentImageIndex]}
+                alt={`${listing.title} - Expanded image ${currentImageIndex + 1}`}
+                className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg"
+                onClick={(event) => event.stopPropagation()}
+              />
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
