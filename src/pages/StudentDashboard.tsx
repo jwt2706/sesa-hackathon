@@ -31,10 +31,12 @@ export function StudentDashboard() {
 
     const params = new URLSearchParams({
       q: address,
-      format: 'json',
+      format: 'jsonv2',
+      addressdetails: '1',
       limit: '1',
     });
     const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+    if (!response.ok) return null;
     const results = await response.json();
     if (!results?.length) return null;
 
@@ -60,14 +62,21 @@ export function StudentDashboard() {
     setLoading(true);
     try {
       const data = await listingService.getListings(filters);
-      if (filters.targetLat !== undefined && filters.targetLng !== undefined && filters.radiusKm) {
+      const targetCoords =
+        filters.targetLat !== undefined && filters.targetLng !== undefined
+          ? { lat: filters.targetLat, lng: filters.targetLng }
+          : filters.targetAddress
+            ? await geocodeAddress(filters.targetAddress)
+            : null;
+
+      if (targetCoords && filters.radiusKm) {
         const filtered = await Promise.all(
           data.map(async (listing) => {
             const coords = await geocodeAddress(listing.address);
             if (!coords) return null;
             const distance = getDistanceKm(
-              filters.targetLat!,
-              filters.targetLng!,
+              targetCoords.lat,
+              targetCoords.lng,
               coords.lat,
               coords.lng
             );
