@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { listingService } from '../services/api';
 import { supabase } from '../lib/supabase';
@@ -38,6 +38,20 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
 
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [expandedPreview, setExpandedPreview] = useState<string | null>(null);
+  const imagePreviews = useMemo(
+    () => imageFiles.map((file) => ({
+      file,
+      url: URL.createObjectURL(file),
+    })),
+    [imageFiles]
+  );
+
+  useEffect(() => {
+    return () => {
+      imagePreviews.forEach((preview) => URL.revokeObjectURL(preview.url));
+    };
+  }, [imagePreviews]);
 
   const handleAmenityToggle = (amenity: string) => {
     setFormData((prev) => ({
@@ -326,7 +340,20 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
               accept="image/*"
               multiple
               className="glass-input"
-              onChange={(e) => setImageFiles(Array.from(e.target.files ?? []))}
+              onChange={(e) => {
+                const selected = Array.from(e.target.files ?? []);
+                if (selected.length === 0) return;
+                setImageFiles((prev) => {
+                  const combined = [...prev, ...selected];
+                  const unique = new Map(
+                    combined.map((file) => [
+                      `${file.name}-${file.size}-${file.lastModified}`,
+                      file,
+                    ])
+                  );
+                  return Array.from(unique.values());
+                });
+              }}
             />
             {existingListing?.image_urls?.length ? (
               <p className="text-xs text-gray-500 mt-2">
@@ -336,6 +363,36 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
               <p className="text-xs text-gray-500 mt-2">
                 Upload one or more images. PNG or JPG recommended.
               </p>
+            )}
+            {imagePreviews.length > 0 && (
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                {imagePreviews.map(({ file, url }) => (
+                  <div key={url} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setExpandedPreview(url)}
+                      className="h-24 w-full rounded-lg overflow-hidden border border-white/10"
+                    >
+                      <img
+                        src={url}
+                        alt={file.name}
+                        className="h-full w-full object-cover object-center"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setImageFiles((prev) =>
+                          prev.filter((item) => item !== file)
+                        )
+                      }
+                      className="absolute top-1 right-1 h-7 w-7 text-xs glass-icon-button"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
 
@@ -357,6 +414,26 @@ export function UploadListingModal({ onClose, onSuccess, existingListing }: Uplo
           </div>
         </form>
       </div>
+      {expandedPreview && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
+          onClick={() => setExpandedPreview(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setExpandedPreview(null)}
+            className="absolute top-6 right-6 h-10 w-10 glass-icon-button"
+          >
+            <FaXmark size={18} />
+          </button>
+          <img
+            src={expandedPreview}
+            alt="Listing preview"
+            className="max-h-[85vh] max-w-[90vw] object-contain rounded-lg"
+            onClick={(event) => event.stopPropagation()}
+          />
+        </div>
+      )}
     </div>
   );
 }
