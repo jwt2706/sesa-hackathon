@@ -1,3 +1,4 @@
+@import 'leaflet/dist/leaflet.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -131,5 +132,15 @@
 		background: rgba(143, 0, 26, 0.2);
 		border: 1px solid rgba(143, 0, 26, 0.45);
 		color: #f2d6db;
+	}
+
+	.map-pin-icon {
+		background: transparent;
+		border: none;
+	}
+
+	.leaflet-div-icon {
+		background: transparent;
+		border: none;
 	}
 }
