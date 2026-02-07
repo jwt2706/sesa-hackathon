@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { FaRightFromBracket } from 'react-icons/fa6';
 import { useAuth } from '../contexts/AuthContext';
 import { listingService } from '../services/api';
@@ -18,16 +18,66 @@ export function StudentDashboard() {
   const [showApplicationStatus, setShowApplicationStatus] = useState(false);
   const [showGroupManagement, setShowGroupManagement] = useState(false);
   const [filters, setFilters] = useState<ListingFilters>({});
+  const geocodeCacheRef = useRef(new Map<string, { lat: number; lng: number }>());
 
   useEffect(() => {
     loadListings();
   }, [filters]);
 
+  const geocodeAddress = async (address: string) => {
+    if (geocodeCacheRef.current.has(address)) {
+      return geocodeCacheRef.current.get(address) ?? null;
+    }
+
+    const params = new URLSearchParams({
+      q: address,
+      format: 'json',
+      limit: '1',
+    });
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+    const results = await response.json();
+    if (!results?.length) return null;
+
+    const coords = { lat: Number(results[0].lat), lng: Number(results[0].lon) };
+    geocodeCacheRef.current.set(address, coords);
+    return coords;
+  };
+
+  const getDistanceKm = (lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const earthRadiusKm = 6371;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c;
+  };
+
   const loadListings = async () => {
     setLoading(true);
     try {
       const data = await listingService.getListings(filters);
-      setListings(data);
+      if (filters.targetLat !== undefined && filters.targetLng !== undefined && filters.radiusKm) {
+        const filtered = await Promise.all(
+          data.map(async (listing) => {
+            const coords = await geocodeAddress(listing.address);
+            if (!coords) return null;
+            const distance = getDistanceKm(
+              filters.targetLat!,
+              filters.targetLng!,
+              coords.lat,
+              coords.lng
+            );
+            return distance <= filters.radiusKm! ? listing : null;
+          })
+        );
+        setListings(filtered.filter((listing): listing is Listing => Boolean(listing)));
+      } else {
+        setListings(data);
+      }
     } catch (error) {
       console.error('Error loading listings:', error);
     } finally {

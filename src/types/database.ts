@@ -59,4 +59,8 @@ export interface ListingFilters {
   genderPreference?: 'any' | 'male' | 'female';
   rentalType?: string[];
   amenities?: string[];
+  targetAddress?: string;
+  targetLat?: number;
+  targetLng?: number;
+  radiusKm?: number;
 }
